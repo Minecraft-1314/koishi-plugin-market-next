@@ -11,7 +11,12 @@ import {
   MAX_LOCAL_BINDING_PACK_SIZE,
 } from './local-binding'
 
-const LOCAL_UPLOAD_CHUNK_SIZE = 512 * 1024
+// Every chunk travels to the server as one Console WebSocket message, base64 encoded,
+// and each client "send" gives up with "timeout" after 60 seconds. Some console front
+// ends and reverse proxies stop delivering frames around 100 KB, so the previous
+// 512 KiB chunk (about 683 KB once encoded) stalled uploads of archives above 100 KB
+// (issue #26). 64 KiB keeps a whole message near 87 KB, well below that limit.
+const LOCAL_UPLOAD_CHUNK_SIZE = 64 * 1024
 const LOCAL_UPLOAD_TTL = 15 * 60 * 1000
 const MAX_ARCHIVE_ENTRIES = 8192
 const MAX_ARCHIVE_EXPANDED_SIZE = 256 * 1024 * 1024
